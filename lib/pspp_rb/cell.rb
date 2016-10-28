@@ -1,4 +1,4 @@
-module Pspprb
+module PsppRb
   class Cell
     attr_accessor :data
 

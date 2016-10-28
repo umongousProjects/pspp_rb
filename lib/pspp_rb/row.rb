@@ -1,4 +1,4 @@
-module Pspprb
+module PsppRb
   class Row
     attr_reader :cells
 

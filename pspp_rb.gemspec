@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'pspprb/version'
+require 'pspp_rb/version'
 
 Gem::Specification.new do |spec|
-  spec.name          ='pspprb'
-  spec.version       = Pspprb::VERSION
+  spec.name          ='pspp_rb'
+  spec.version       = PsppRb::VERSION
   spec.authors       = ['Oleg Antonyan']
   spec.email         = %w(oleg.b.antonyan@gmail.com)
 
   spec.summary       = 'Wrapper for GNU PSPP statistical analysis software'
   spec.description   = 'Wrapper for GNU PSPP statistical analysis software'
-  spec.homepage      =  'http://github.com/olegantonyan/pspprb'
+  spec.homepage      =  'https://github.com/umongousProjects/pspp_rb'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
