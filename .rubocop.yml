@@ -1,0 +1,11 @@
+AllCops:
+  Exclude:
+    - 'Gemfile'
+    - 'Rakefile'
+    - '*.gemspec'
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 170
