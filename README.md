@@ -2,7 +2,7 @@
 
 Wrapper for GNU PSPP https://www.gnu.org/software/pspp
 
-Allows you
+Allows you to export data from plain Ruby-object to SPSS file format
 
 ## Installation
 
