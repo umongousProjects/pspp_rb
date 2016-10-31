@@ -1,8 +1,8 @@
 # PsppRb
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ruby/pspp`. To experiment with that code, run `bin/console` for an interactive prompt.
+Wrapper for GNU PSPP https://www.gnu.org/software/pspp
 
-TODO: Delete this and the text above, and describe your gem
+Allows you
 
 ## Installation
 
@@ -20,9 +20,31 @@ Or install it yourself as:
 
     $ gem install pspp_rb
 
+You have to have GNU PSPP installed https://www.gnu.org/software/pspp.
+
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+# prepare data
+variables = [PsppRb::Variable.new(name: 'VAR0', format: 'F4.1', level: 'ORDINAL', label: 'make const not var'),
+             PsppRb::Variable.new(name: 'VAR1', format: 'A50', level: 'NOMINAL'),
+             PsppRb::Variable.new(name: 'VAR2', format: 'F9.4'),
+             PsppRb::Variable.new(name: 'VAR3', value_labels: { 1 => 'one', 2 => 'two' })]
+
+dataset = PsppRb::DataSet.new(variables)
+
+1.upto(15) do |i|
+  values = [100 * i,
+            'text' * i,
+            200 * i,
+            i % 2 + 1]
+  cas = PsppRb::Case.new(values)
+  dataset << cas
+end
+
+# export to a sav file
+PsppRb.export(dataset, '/path/to/file.sav')
+```
 
 ## Development
 

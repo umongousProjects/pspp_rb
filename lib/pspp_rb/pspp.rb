@@ -2,23 +2,17 @@ require 'open3'
 
 module PsppRb
   class Pspp
-    attr_reader :log, :command
+    attr_reader :log, :pspp_cli_path
 
-    def initialize(command: 'pspp')
-      self.command = Shellwords.shellescape(command)
-      raise PsppError, "cannot execute '#{command}' program" unless system(self.command, '--version')
+    def initialize(pspp_cli_path: 'pspp')
+      self.pspp_cli_path = Shellwords.shellescape(pspp_cli_path)
+      raise PsppError, "cannot execute '#{command}' program" unless system(self.pspp_cli_path, '--version')
     end
 
-    def export(list, outfile)
-      raise ArgumentError, "list must be List, got #{list.class}" unless list.is_a?(List)
-      raise ArgumentError, "outfile must be String, got #{outfile.class}" unless outfile.is_a?(String)
-
+    def execute(commands)
       self.log = nil
-      
-      Open3.popen3(command + ' --batch') do |i, o, _, _|
-        i.write(list.to_pspp)
-        i.write("save outfile='#{outfile}'.\n")
-        i.write('finish.')
+      Open3.popen3(pspp_cli_path + ' --batch') do |i, o, _, _|
+        i.write(commands)
         i.close
         self.log = o.read
       end
@@ -36,6 +30,6 @@ module PsppRb
 
     private
 
-    attr_writer :log, :command
+    attr_writer :log, :pspp_cli_path
   end
 end

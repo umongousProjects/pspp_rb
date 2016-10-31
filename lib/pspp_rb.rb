@@ -1,35 +1,40 @@
 require 'pspp_rb/version'
 require 'pspp_rb/pspp'
-require 'pspp_rb/list'
-require 'pspp_rb/row'
+require 'pspp_rb/data_set'
+require 'pspp_rb/case'
 require 'pspp_rb/variable'
-require 'pspp_rb/cell'
 require 'pspp_rb/pspp_error'
 
 module PsppRb
   def self.dummy
-    variables = [Variable.new(name: 'var_0', format: 'F4.1', level: 'NOMINAL'),
-                 Variable.new(name: 'var_1', format: 'A30', level: 'NOMINAL'),
-                 Variable.new(name: 'var_2', format: 'F9.4', level: 'NOMINAL')]
-    list = List.new(variables)
+    variables = [Variable.new(name: 'VAR0', format: 'F4.1', level: 'ORDINAL', label: 'make const not var'),
+                 Variable.new(name: 'VAR1', format: 'A50', level: 'NOMINAL'),
+                 Variable.new(name: 'VAR2', format: 'F9.4'),
+                 Variable.new(name: 'VAR3', value_labels: { 1 => 'one', 2 => 'two' })]
+
+    dataset = DataSet.new(variables)
+
     1.upto(15) do |i|
-      cell0 = Cell.new(3.0 * i)
-      cell1 = Cell.new('ПРЕВЕД' * i)
-      cell2 = Cell.new(50.0 * i)
-      row = Row.new
-      row << cell0
-      row << cell1
-      row << cell2
-      list << row
+      values = [100 * i,
+                'text' * i,
+                200 * i,
+                i % 2 + 1]
+      cas = Case.new(values)
+      dataset << cas
     end
 
+    export(dataset, '/home/oleg/Desktop/heeee.sav')
+  end
+
+  def self.export(dataset, outfile)
+    raise ArgumentError, "dataset must be DataSet, got #{dataset.class}" unless dataset.is_a?(DataSet)
+    raise ArgumentError, "outfile must be String, got #{outfile.class}" unless outfile.is_a?(String)
+
+    commands = dataset.to_pspp
+    commands << "save outfile='#{outfile}'.\n"
+    commands << 'finish.'
+
     pspp = Pspp.new
-    puts pspp.export(list, '/home/oleg/Desktop/hello.sav')
-
-    puts '******'
-    puts pspp.log
-
-    puts "&&&&&&& errors: "
-    puts pspp.errors
+    pspp.execute(commands)
   end
 end
