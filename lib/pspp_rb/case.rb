@@ -24,7 +24,7 @@ module PsppRb
     end
 
     def to_pspp
-      values.map(&:to_s).join(' ') + "\n"
+      values.map { |i| "'#{i}'" }.join(' ') + "\n"
     end
 
     private
