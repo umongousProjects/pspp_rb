@@ -8,7 +8,7 @@ module PsppRb
       end
 
       def initialize(data)
-        raise ArgumentError, "level must be one of #{available_levels.join(', ')}" unless self.class.available_levels.include?(data)
+	 raise ArgumentError, "level must be one of #{self.class.available_levels.join(', ')}" unless self.class.available_levels.include?(data)
         self.data = data
       end
 
