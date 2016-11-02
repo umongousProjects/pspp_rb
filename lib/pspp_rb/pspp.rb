@@ -16,7 +16,7 @@ module PsppRb
         i.close
         self.log = o.read
       end
-      success?
+      raise PsppError, "error executing pspp commands '#{text_excerpt(commands)}':\n  #{text_excerpt(errors.join("\n  "))}" unless success?
     end
 
     def errors
@@ -31,5 +31,10 @@ module PsppRb
     private
 
     attr_writer :log, :pspp_cli_path
+
+    def text_excerpt(text, maxlen: 100, omission: '...')
+      return text if text.length < maxlen
+      text[0..(maxlen - omission.length)] + omission
+    end
   end
 end
