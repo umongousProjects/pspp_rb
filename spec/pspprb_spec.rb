@@ -15,13 +15,11 @@ describe PsppRb do
       dataset = PsppRb::DataSet.new(variables)
 
       1.upto(15) do |i|
-        values = [100 * i,
-                  'text' * i,
-                  200 * i,
-                  i % 2 + 1]
+        values = [100 * i, 'text' * i, 200 * i,  i % 2 + 1]
         cas = PsppRb::Case.new(values)
         dataset << cas
       end
+      dataset << PsppRb::Case.new([1, "it's complicated", 2, 3])
 
       correct_output = <<-PSPP
 data list list /VAR0(F4.1) VAR1(A50) VAR2(F9.4) VAR3.
@@ -45,6 +43,7 @@ begin data.
 '1300' 'texttexttexttexttexttexttexttexttexttexttexttexttext' '2600' '2'
 '1400' 'texttexttexttexttexttexttexttexttexttexttexttexttexttext' '2800' '1'
 '1500' 'texttexttexttexttexttexttexttexttexttexttexttexttexttexttext' '3000' '2'
+'1' 'it''s complicated' '2' '3'
 end data.
 PSPP
       expect(dataset.to_pspp).to eq correct_output

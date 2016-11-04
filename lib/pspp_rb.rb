@@ -42,4 +42,9 @@ module PsppRb
     pspp = Pspp.new
     pspp.execute(commands)
   end
+
+  def self.escape_text(text)
+    return text unless text.is_a?(String)
+    text.gsub("'", "''")
+  end
 end

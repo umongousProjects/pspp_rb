@@ -9,7 +9,7 @@ module PsppRb
 
       def to_pspp
         if data
-          "'#{data}'"
+          "'#{PsppRb.escape_text(data)}'"
         else
           ''
         end
