@@ -26,7 +26,7 @@ data list list /VAR0(F4.1) VAR1(A50) VAR2(F9.4) VAR3.
 variable level VAR0 (ORDINAL).
 variable labels VAR0 'make const not var'.
 variable level VAR1 (NOMINAL).
-value labels /VAR3 1 'one' 2 'two'.
+value labels /VAR3 '1' 'one' '2' 'two'.
 begin data.
 '100' 'text' '200' '2'
 '200' 'texttext' '400' '1'
