@@ -9,7 +9,7 @@ module PsppRb
       end
 
       def to_pspp
-        "#{PsppRb.escape_text(value)} '#{PsppRb.escape_text(label)}'"
+        "'#{PsppRb.escape_text(value)}' '#{PsppRb.escape_text(label)}'"
       end
 
       def to_s
