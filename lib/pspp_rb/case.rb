@@ -8,6 +8,7 @@ module PsppRb
     end
 
     def append_value(value)
+      raise PsppError, "value must be String or Numeric, got #{value.class}" unless [String, Numeric].any? { |i| value.is_a?(i) }
       values << value
     end
 
