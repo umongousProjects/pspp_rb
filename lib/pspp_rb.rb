@@ -31,20 +31,6 @@ module PsppRb
     }
   end
 
-  def self.dummy2
-    variables = [Variable.new(name: 'VAR0', format: 'A1000',  label: "hello\n\nworld")]
-
-    dataset = DataSet.new(variables)
-
-    1.upto(2) do |i|
-      values = ["one\ntwo"]
-      cas = Case.new(values)
-      dataset << cas
-    end
-
-    export(dataset, '/home/oleg/Desktop/faaaa.sav')
-  end
-
   def self.export(dataset, outfile)
     raise ArgumentError, "dataset must be DataSet, got #{dataset.class}" unless dataset.is_a?(DataSet)
     raise ArgumentError, "outfile must be String, got #{outfile.class}" unless outfile.is_a?(String)
@@ -59,7 +45,25 @@ module PsppRb
 
   def self.escape_text(text)
     return text unless text.is_a?(String)
-    text.gsub("'", "''") # escape single quote
-        .gsub(/[^[:print:]]+/, ' ') # remove non-prinatable characters
+    strip_non_printable_characters(text.gsub("'", "''"))
+  end
+
+  def self.escape_data(text)
+    return text unless text.is_a?(String)
+    if text.include?("'") && !text.include?('"')
+      "\"#{strip_non_printable_characters(text)}\""
+    elsif text.include?('"') && !text.include?("'")
+      "'#{escape_text(text)}'"
+    elsif text.include?("'") && text.include?('"')
+      "'#{escape_text(text.gsub("'", '`'))}'"
+    else
+      "'#{escape_text(text)}'"
+    end
+  end
+
+  private
+
+  def self.strip_non_printable_characters(text)
+    text.gsub(/[^[:print:]]+/, ' ')
   end
 end

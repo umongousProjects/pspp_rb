@@ -24,15 +24,20 @@ module PsppRb
       log.scan(/(error.*)/).flatten
     end
 
+    def warnings
+      return [] unless log
+      log.scan(/(warning.*)/).flatten
+    end
+
     def success?
-      errors.empty?
+      errors.empty? && warnings.empty?
     end
 
     private
 
     attr_writer :log, :pspp_cli_path
 
-    def text_excerpt(text, maxlen: 100, omission: '...')
+    def text_excerpt(text, maxlen: 200, omission: '...')
       return text if text.length < maxlen
       text[0..(maxlen - omission.length)] + omission
     end

@@ -24,7 +24,7 @@ module PsppRb
     end
 
     def to_pspp
-      values.map { |i| "'#{PsppRb.escape_text(i)}'" }.join(' ') + "\n"
+      values.map { |i| PsppRb.escape_data(i) }.join(' ') + "\n"
     end
 
     private
