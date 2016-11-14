@@ -7,7 +7,7 @@ module PsppRb
 
     def initialize(pspp_cli_path: 'pspp')
       self.pspp_cli_path = Shellwords.shellescape(pspp_cli_path)
-      raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
+      # raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
     end
 
     def execute(commands)
