@@ -42,7 +42,9 @@ module PsppRb
     attr_writer :log, :pspp_cli_path
 
     def check_execution_result!(commands)
-      raise PsppError, "error executing pspp commands '#{text_excerpt(commands)}':\n  #{text_excerpt(errors.join("\n  "))}" unless success?
+      ct = text_excerpt(commands)
+      et = text_excerpt(errors.join("\n  "))
+      raise PsppError, "error executing pspp commands '#{ct}':\n  #{et}\n *** PSPP LOG ***\n#{log}\n*** END OF PSPP LOG ***" unless success?
     end
 
     def text_excerpt(text, maxlen: 200, omission: '...')
