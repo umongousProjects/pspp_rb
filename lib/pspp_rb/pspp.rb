@@ -17,7 +17,7 @@ module PsppRb
       execute_commands(commands, err_log_file, out_log_file)
       read_to_log(out_log_file)
       read_to_log(err_log_file)
-      check_execution_result!
+      check_execution_result!(commands)
     ensure
       delete_file(out_log_file)
       delete_file(err_log_file)
@@ -41,7 +41,7 @@ module PsppRb
 
     attr_writer :log, :pspp_cli_path
 
-    def check_execution_result!
+    def check_execution_result!(commands)
       raise PsppError, "error executing pspp commands '#{text_excerpt(commands)}':\n  #{text_excerpt(errors.join("\n  "))}" unless success?
     end
 
