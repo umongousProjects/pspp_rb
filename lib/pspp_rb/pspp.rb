@@ -67,12 +67,14 @@ module PsppRb
     end
 
     def execute_commands(commands, err_log_file, out_log_file)
-      stdin, stdout, stderr, wait_thr = Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
-      stdin.write(commands)
-      stdin.close
-      wait_thr.value.success?
+      result = false
+      Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file) do |stdin, _stdout, _stderr, wait_thr|
+        stdin.write(commands)
+        stdin.close
+        result = wait_thr.value.success?
+      end
+      result
     ensure
-      [stdin, stdout, stderr].reject(&:nil?).reject(&:closed?).each(&:close)
       read_to_log(out_log_file)
       read_to_log(err_log_file)
     end
