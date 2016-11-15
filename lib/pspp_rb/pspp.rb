@@ -1,4 +1,8 @@
-require 'open3'
+if RUBY_VERSION < '2.2'
+  require 'posix/spawn'
+else
+  require 'open3'
+end
 require 'securerandom'
 
 module PsppRb
@@ -67,13 +71,26 @@ module PsppRb
     end
 
     def execute_commands(commands, err_log_file, out_log_file)
-      result = false
-      Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file) do |stdin, _stdout, _stderr, wait_thr|
-        stdin.write(commands)
-        stdin.close
-        result = wait_thr.value.success?
+      if RUBY_VERSION < '2.2'
+        begin
+          pid, stdin, stdout, stderr = POSIX::Spawn.popen4(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
+          stdin.write(commands)
+          stdin.close
+          _, result = Process::waitpid2(pid)
+          result.success?
+        ensure
+          [stdin, stdout, stderr].reject(&:nil?).reject(&:closed?).each(&:close)
+          Process::waitpid(pid) rescue nil
+        end
+      else
+        result = false
+        Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file) do |stdin, _stdout, _stderr, wait_thr|
+          stdin.write(commands)
+          stdin.close
+          result = wait_thr.value.success?
+        end
+        result
       end
-      result
     ensure
       read_to_log(out_log_file)
       read_to_log(err_log_file)
