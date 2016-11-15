@@ -14,10 +14,10 @@ module PsppRb
       self.log = ''
       err_log_file = error_log_file_path
       out_log_file = output_log_file_path
-      execute_commands(commands, err_log_file, out_log_file)
+      success = execute_commands(commands, err_log_file, out_log_file)
       read_to_log(out_log_file)
       read_to_log(err_log_file)
-      check_execution_result!(commands)
+      check_execution_result!(commands, success)
     ensure
       delete_file(out_log_file)
       delete_file(err_log_file)
@@ -41,10 +41,10 @@ module PsppRb
 
     attr_writer :log, :pspp_cli_path
 
-    def check_execution_result!(commands)
+    def check_execution_result!(commands, success)
       ct = text_excerpt(commands)
       et = text_excerpt(errors.join("\n  "))
-      raise PsppError, "error executing pspp commands '#{ct}':\n  #{et}\n *** PSPP LOG ***\n#{log}\n*** END OF PSPP LOG ***" unless success?
+      raise PsppError, "error executing pspp commands '#{ct}':\n  #{et}\n *** PSPP LOG ***\n#{log}\n*** END OF PSPP LOG ***" if !success? || !success
     end
 
     def text_excerpt(text, maxlen: 200, omission: '...')
@@ -69,10 +69,13 @@ module PsppRb
     end
 
     def execute_commands(commands, err_log_file, out_log_file)
-      Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file) do |i, _o, _, _|
-        i.write(commands)
-        i.close
-      end
+      stdin, stdout, stderr, wait_thr = Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
+      stdin.write(commands)
+    ensure
+      stdin.close
+      stdout.close
+      stderr.close
+      return wait_thr.value.success?
     end
   end
 end
