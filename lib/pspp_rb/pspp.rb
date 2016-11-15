@@ -7,7 +7,7 @@ module PsppRb
 
     def initialize(pspp_cli_path: 'pspp')
       self.pspp_cli_path = Shellwords.shellescape(pspp_cli_path)
-      # raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
+      raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
     end
 
     def execute(commands)
@@ -15,8 +15,6 @@ module PsppRb
       err_log_file = error_log_file_path
       out_log_file = output_log_file_path
       success = execute_commands(commands, err_log_file, out_log_file)
-      read_to_log(out_log_file)
-      read_to_log(err_log_file)
       check_execution_result!(commands, success)
     ensure
       delete_file(out_log_file)
@@ -71,11 +69,14 @@ module PsppRb
     def execute_commands(commands, err_log_file, out_log_file)
       stdin, stdout, stderr, wait_thr = Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
       stdin.write(commands)
+      stdin.close
+      wait_thr.value.success?
     ensure
       stdin.close if stdin
       stdout.close if stdout
       stderr.close if stdout
-      return wait_thr.value.success?
+      read_to_log(out_log_file)
+      read_to_log(err_log_file)
     end
   end
 end
