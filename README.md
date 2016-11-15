@@ -9,7 +9,7 @@ Allows you to export data from plain Ruby-object to SPSS file format
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'pspp_rb'
+gem 'pspp_rb', github: 'umongousProjects/pspp_rb'
 ```
 
 And then execute:
