@@ -7,6 +7,8 @@ require 'securerandom'
 
 module PsppRb
   class Pspp
+    include POSIX::Spawn if RUBY_VERSION < '2.2'
+
     attr_reader :log, :pspp_cli_path
 
     def initialize(pspp_cli_path: 'pspp')
@@ -73,7 +75,7 @@ module PsppRb
     def execute_commands(commands, err_log_file, out_log_file)
       if RUBY_VERSION < '2.2'
         begin
-          pid, stdin, stdout, stderr = POSIX::Spawn.popen4(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
+          pid, stdin, stdout, stderr = popen4(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
           stdin.write(commands)
           stdin.close
           _, result = Process::waitpid2(pid)
