@@ -1,101 +1,37 @@
-if RUBY_VERSION < '2.2'
-  require 'posix/spawn'
-else
-  require 'open3'
-end
 require 'securerandom'
+require 'pspp_rb/pspp/exec'
+require 'pspp_rb/pspp/log'
 
 module PsppRb
   class Pspp
-    include POSIX::Spawn if RUBY_VERSION < '2.2'
-
-    attr_reader :log, :pspp_cli_path
+    attr_reader :log, :pspp_exec
 
     def initialize(pspp_cli_path: 'pspp')
-      self.pspp_cli_path = Shellwords.shellescape(pspp_cli_path)
-      raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
+      self.pspp_exec = Exec.new(pspp_cli_path)
+      self.log = Log.new
     end
 
     def execute(commands)
-      self.log = ''
-      err_log_file = error_log_file_path
-      out_log_file = output_log_file_path
-      success = execute_commands(commands, err_log_file, out_log_file)
+      success = pspp_exec.execute(commands, log.error_file_path, log.output_file_path)
+      log.read!
       check_execution_result!(commands, success)
     ensure
-      delete_file(out_log_file)
-      delete_file(err_log_file)
-    end
-
-    def errors
-      return [] unless log
-      log.scan(/(error.*)/).flatten
-    end
-
-    def warnings
-      return [] unless log
-      log.scan(/(warning.*)/).flatten
-    end
-
-    def success?
-      errors.empty? && warnings.empty?
+      log.utilize!
     end
 
     private
 
-    attr_writer :log, :pspp_cli_path
+    attr_writer :log, :pspp_exec
 
     def check_execution_result!(commands, success)
       ct = text_excerpt(commands)
-      et = text_excerpt(errors.join("\n  "))
-      raise PsppError, "error executing pspp commands '#{ct}':\n  #{et}\n *** PSPP LOG ***\n#{log}\n*** END OF PSPP LOG ***" if !success? || !success
+      return true if success && log.success?
+      raise PsppError, "error executing pspp commands `#{ct}`\n*** PSPP LOG ***\n#{log}\n*** END OF PSPP LOG ***"
     end
 
-    def text_excerpt(text, maxlen: 200, omission: '...')
+    def text_excerpt(text, maxlen: 300, omission: '...')
       return text if text.length < maxlen
       text[0..(maxlen - omission.length)] + omission
-    end
-
-    def error_log_file_path
-      File.join(Dir.tmpdir, 'pspp_errors_' + SecureRandom.hex)
-    end
-
-    def output_log_file_path
-      File.join(Dir.tmpdir, 'pspp_output_' + SecureRandom.hex)
-    end
-
-    def read_to_log(filepath)
-      log << File.read(filepath) if File.exist?(filepath)
-    end
-
-    def delete_file(filepath)
-      File.delete(filepath) if File.exist?(filepath)
-    end
-
-    def execute_commands(commands, err_log_file, out_log_file)
-      if RUBY_VERSION < '2.2'
-        begin
-          pid, stdin, stdout, stderr = popen4(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
-          stdin.write(commands)
-          stdin.close
-          _, result = Process::waitpid2(pid)
-          result.success?
-        ensure
-          [stdin, stdout, stderr].reject(&:nil?).reject(&:closed?).each(&:close)
-          Process::waitpid(pid) rescue nil
-        end
-      else
-        result = false
-        Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file) do |stdin, _stdout, _stderr, wait_thr|
-          stdin.write(commands)
-          stdin.close
-          result = wait_thr.value.success?
-        end
-        result
-      end
-    ensure
-      read_to_log(out_log_file)
-      read_to_log(err_log_file)
     end
   end
 end
