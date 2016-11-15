@@ -72,9 +72,9 @@ module PsppRb
       stdin, stdout, stderr, wait_thr = Open3.popen3(pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file)
       stdin.write(commands)
     ensure
-      stdin.close
-      stdout.close
-      stderr.close
+      stdin.close if stdin
+      stdout.close if stdout
+      stderr.close if stdout
       return wait_thr.value.success?
     end
   end
