@@ -72,9 +72,7 @@ module PsppRb
       stdin.close
       wait_thr.value.success?
     ensure
-      stdin.close if stdin
-      stdout.close if stdout
-      stderr.close if stdout
+      [stdin, stdout, stderr].reject(&:nil?).reject(&:closed?).each(&:close)
       read_to_log(out_log_file)
       read_to_log(err_log_file)
     end
