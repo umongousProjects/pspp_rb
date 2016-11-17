@@ -24,7 +24,7 @@ module PsppRb
       dataset = DataSet.new(variables)
 
       1.upto(cases) do |i|
-        values = [2 * 1, 'some text', 3 * i, i % 2 + 1]
+        values = [2 * 1, 'привет мир', 3 * i, i % 2 + 1]
         cas = Case.new(values)
         dataset << cas
       end
