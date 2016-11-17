@@ -21,10 +21,10 @@ module PsppRb
       end
 
       def env
-        { 'LANG' => 'en_US.UTF-8',
-          'LANGUAGE' => 'en_US.UTF-8',
-          'LC_CTYPE' => 'en_US.UTF-8',
-          'LC_ALL' => 'en_US.UTF-8' }.freeze
+        { 'LANG' => 'en_US.utf8',
+          'LANGUAGE' => 'en_US.utf8',
+          'LC_CTYPE' => 'en_US.utf8',
+          'LC_ALL' => 'en_US.utf8' }.freeze
       end
     end
   end
