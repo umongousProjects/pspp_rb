@@ -8,7 +8,7 @@ require 'pspp_rb/escape'
 
 module PsppRb
   # rubocop: disable Metrics/MethodLength, Metrics/AbcSize
-  def self.dummy
+  def self.dummy(filepath = '/home/oleg/Desktop/heeee.sav')
     require 'benchmark'
 
     cases = 1_000
@@ -29,7 +29,7 @@ module PsppRb
         dataset << cas
       end
 
-      export(dataset, '/home/oleg/Desktop/heeee.sav')
+      export(dataset, filepath)
     }
   end
   # rubocop: enable Metrics/MethodLength, Metrics/AbcSize
