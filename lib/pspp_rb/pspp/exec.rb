@@ -19,7 +19,7 @@ module PsppRb
       if RUBY_VERSION < '2.2'
         def execute(commands, err_log_file, out_log_file)
           pid, stdin, stdout, stderr = popen4(env, pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file, '-O', 'box=unicode')
-          stdin.write(force_unicode(commands))
+          stdin.write(commands)
           stdin.close
           _, result = Process.waitpid2(pid)
           result.success?
@@ -30,7 +30,7 @@ module PsppRb
         def execute(commands, err_log_file, out_log_file)
           result = false
           Open3.popen3(env, pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file, '-s', '-O', 'box=unicode') do |stdin, stdout, stderr, wait_thr|
-            stdin.write(force_unicode(commands))
+            stdin.write(commands)
             stdin.close
             stdout.close # just for sure
             stderr.close
@@ -42,7 +42,7 @@ module PsppRb
 
       def env
         { 'LANG' => 'en_US.UTF-8',
-          'LANGUAGE' => '',
+          'LANGUAGE' => 'en_US.UTF-8',
           'LC_CTYPE' => 'en_US.UTF-8',
           'LC_NUMERIC' => 'en_US.UTF-8',
           'LC_TIME' => 'en_US.UTF-8',
@@ -55,13 +55,7 @@ module PsppRb
           'LC_TELEPHONE' => 'en_US.UTF-8',
           'LC_MEASUREMENT' => 'en_US.UTF-8',
           'LC_IDENTIFICATION' => 'en_US.UTF-8',
-          'LC_ALL' => '' }.freeze
-      end
-
-      def force_unicode(str)
-        str.encode('UTF-8').force_encoding('UTF-8')
-      rescue
-        str.force_encoding('UTF-8')
+          'LC_ALL' => 'en_US.UTF-8' }.freeze
       end
     end
   end
