@@ -43,7 +43,6 @@ module PsppRb
       def env
         { 'LANG' => 'C',
           'LC_ALL' => 'en_CA.UTF-8' }.freeze
-          {}
       end
     end
   end
