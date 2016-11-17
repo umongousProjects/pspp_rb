@@ -39,15 +39,16 @@ module PsppRb
     raise ArgumentError, "dataset must be DataSet, got #{dataset.class}" unless dataset.is_a?(DataSet)
     raise ArgumentError, "outfile must be String, got #{outfile.class}" unless outfile.is_a?(String)
 
-    datafile = Tempfile.new('pspp_data')
-    datafile << dataset.to_pspp_data
-    datafile.close
-
-    commands = dataset.to_pspp_definition(datafile.path)
+    commands = dataset.to_pspp
     commands << "save outfile='#{outfile}'.\n"
     commands << 'finish.'
 
+    datafile = Tempfile.new('pspp_data')
+    datafile.binmode
+    datafile << commands
+    datafile.close
+
     pspp = Pspp.new
-    pspp.execute(commands)
+    pspp.execute(datafile.path)
   end
 end
