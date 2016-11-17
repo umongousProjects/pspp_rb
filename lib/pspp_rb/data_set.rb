@@ -29,19 +29,26 @@ module PsppRb
         data << var.to_pspp
       end
       data << "begin data.\n"
+      data << to_pspp_data
+      data << "end data.\n"
+      data
+    end
+
+    def to_pspp_definition(file = nil)
+      file_def = file ? " file='#{file}'" : ''
+      "data list#{file_def} list /#{variables.map(&:to_pspp_definition).join(' ')}.\n"
+    end
+
+    def to_pspp_data
+      data = ''
       each do |c|
         data << c.to_pspp
       end
-      data << "end data.\n"
       data
     end
 
     private
 
     attr_writer :variables, :cases
-
-    def to_pspp_definition
-      "data list list /#{variables.map(&:to_pspp_definition).join(' ')}.\n"
-    end
   end
 end
