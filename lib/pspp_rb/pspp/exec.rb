@@ -16,7 +16,7 @@ module PsppRb
         raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
       end
 
-      if RUBY_VERSION < '2.2'
+      if RUBY_VERSION < '2.2' && false
         def execute(commands, err_log_file, out_log_file)
           pid, stdin, stdout, stderr = popen4(env, pspp_cli_path, '-b', '-o', out_log_file, '-e', err_log_file, '-O', 'box=unicode')
           stdin.write(commands)
