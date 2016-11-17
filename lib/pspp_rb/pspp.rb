@@ -6,8 +6,8 @@ module PsppRb
   class Pspp
     attr_reader :log, :pspp_exec
 
-    def initialize(pspp_cli_path: 'pspp')
-      self.pspp_exec = Exec.new(pspp_cli_path)
+    def initialize(pspp_cli_path: 'pspp', env: {})
+      self.pspp_exec = Exec.new(pspp_cli_path, env)
       self.log = Log.new
     end
 

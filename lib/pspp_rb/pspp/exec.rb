@@ -9,10 +9,11 @@ module PsppRb
     class Exec
       include POSIX::Spawn if RUBY_VERSION < '2.2'
 
-      attr_accessor :pspp_cli_path
+      attr_accessor :pspp_cli_path, :env
 
-      def initialize(pspp_cli_path)
+      def initialize(pspp_cli_path, env = {})
         self.pspp_cli_path = Shellwords.shellescape(pspp_cli_path)
+        self.env = env.freeze
         raise PsppError, "cannot execute '#{self.pspp_cli_path}' program" unless system(self.pspp_cli_path, '--version')
       end
 
@@ -38,11 +39,6 @@ module PsppRb
           end
           result
         end
-      end
-
-      def env
-        { 'LANG' => 'C',
-          'LC_ALL' => 'en_CA.UTF-8' }.freeze
       end
     end
   end

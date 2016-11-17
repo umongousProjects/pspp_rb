@@ -34,7 +34,7 @@ module PsppRb
   end
   # rubocop: enable Metrics/MethodLength, Metrics/AbcSize
 
-  def self.export(dataset, outfile)
+  def self.export(dataset, outfile, env = {})
     raise ArgumentError, "dataset must be DataSet, got #{dataset.class}" unless dataset.is_a?(DataSet)
     raise ArgumentError, "outfile must be String, got #{outfile.class}" unless outfile.is_a?(String)
 
@@ -42,7 +42,7 @@ module PsppRb
     commands << "save outfile='#{outfile}'.\n"
     commands << 'finish.'
 
-    pspp = Pspp.new
+    pspp = Pspp.new(env: env)
     pspp.execute(commands)
   end
 end
