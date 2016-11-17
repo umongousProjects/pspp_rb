@@ -1,4 +1,4 @@
-if RUBY_VERSION < '2.2'
+if RUBY_VERSION < '2.2' && false
   require 'posix/spawn'
 else
   require 'open3'
@@ -7,7 +7,7 @@ end
 module PsppRb
   class Pspp
     class Exec
-      include POSIX::Spawn if RUBY_VERSION < '2.2'
+      include POSIX::Spawn if RUBY_VERSION < '2.2' && false
 
       attr_accessor :pspp_cli_path
 
