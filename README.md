@@ -48,7 +48,7 @@ PsppRb.export(dataset, '/path/to/file.sav')
 
 You can specify custom enviroment to be used by `pspp`. This is useful if you have problems with unicode on system with non-unicode default locale:
 
-```
+```ruby
 PsppRb.export(dataset, '/path/to/file.sav', { 'LANG' => 'C', 'LC_ALL' => 'en_CA.UTF-8' })
 # pspp will use en_CA.UTF-8 locale
 # make sure it is available on your system (locale -a)
