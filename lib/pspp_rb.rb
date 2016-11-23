@@ -12,7 +12,8 @@ module PsppRb
   def self.dummy
     require 'benchmark'
 
-    cases = 1_000
+    puts Benchmark.measure {
+    cases = 1_000_000
     # benchmark @ core m7-6Y75 8gb
     # 100_000 cases =>   0.570000   0.000000   1.130000 (  1.124553)
       variables = [Variable.new(name: 'VAR0', format: 'F4.1', level: 'ORDINAL', label: 'make const not "var"'),
@@ -22,14 +23,12 @@ module PsppRb
     dataset = DataSet.new(variables)
 
 
-    puts Benchmark.measure {
+
       1.upto(cases) do |i|
-        values = [1, "привет\nмир", 2, 3]
+        values = [1, "привет мир", 2, 3]
         cas = Case.new(values)
         dataset << cas
       end
-    }
-    puts Benchmark.measure {
       export(dataset, '/home/oleg/Desktop/heeee.sav')
     }
   end
